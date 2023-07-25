@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="pl">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="./pico.css">
+        <link rel="stylesheet" href="./form.css">
+    </head>
+    <body>
+        
+        <main>
+            
+            <h1>Koniungacja.it</h1>
+
+            <form>
+
+                <select name="name">
+                    <option value=""></option>
+                </select>
+
+                <section id="time">
+
+                    <h2>Czas</h2>
+
+                    <p>
+
+                        <label class="range">przeszłe
+                            <input class="bad" type="radio" name="time" value="passato">
+                        </label>
+
+                        <label class="range">dzisiejsze 
+                            <input class="fine" type="radio" name="time" value="passato oggi">
+                        </label>
+
+                        <label class="range" title="wcześniejsze od innego przeszłego wydarzenia">wcześniejsze
+                            <input class="bad" type="radio" name="time" value="trapassato">
+                        </label>
+
+                    </p>
+
+                    <p>
+
+                        <label class="range">teraźniejsze
+                            <input class="good" type="radio" name="time" value="presente">
+                        </label>
+
+                        <label class="range" title="zdarzenie przeszłe, które ciągle wpływa na teraźniejszość">wcześniejsze
+                            <input class="bad" type="radio" name="time" value="passato prossimo">
+                        </label>
+
+                    </p>
+
+                    <p>
+                            
+                        <label class="range">przyszłe
+                            <input class="bad" type="radio" name="time" value="futuro">
+                        </label>
+
+                        <label class="range" title="zdarzenie, które wydarzy się zanim nastąpi coś innego">wcześniejsze
+                            <input class="bad" type="radio" name="time" value="futuro anteriore">
+                        </label>
+                    
+                    </p>
+
+
+                    <p>
+
+                        <label class="range">ukończone
+                            <input class="fine" type="radio" name="done" value="finito">
+                        </label>
+
+                        <label class="range" title="zdarzenie może ciągle trwać">nieukończone
+                            <input class="fine" type="radio" name="done" value="nonfinito">
+                        </label>
+
+                    </p>
+
+                    <section id="frequency">
+    
+                        <h3>Częstotliwość</h3>
+                        
+                        <label class="range">unikalne
+                            <input class="bad" type="radio" name="frequency" value="unico">
+                        </label>
+    
+                        <label class="range">powtarzalne
+                            <input class="fine" type="radio" name="frequency" value="ripetuto">
+                        </label>
+    
+                        <label class="range">nieprzerwane
+                            <input class="good" type="radio" name="frequency" value="continuo">
+                        </label>
+    
+                    </section>
+
+                    <button name="reset" type="button">reset</button>
+
+                </section>
+
+
+
+                <section id="mode">
+
+                    <h2>Tryb</h2>
+
+                    <label class="range" title="coś co się nie stało/nie stanie/nie jest realnym">nieprawdziwe
+                        <input class="bad" type="radio" name="mode" value="irrealtà">
+                    </label>
+                        
+                    <label class="range" title="tryb pośredni, np. pytania niebezpośrednie">pośrednie
+                        <input class="fine" type="radio" name="mode" value="congiuntivo">
+                    </label>
+
+                    <label class="range" title="tryb warunkowy - coś innego musi się wydarzyć">warunkowe
+                        <input class="bad" type="radio" name="mode" value="condizionale">
+                    </label>
+                    
+                    <label class="range" title="wyrażenie niepewności co do zdarzenai">możliwe
+                        <input class="fine" type="radio" name="mode" value="possibile">
+                    </label>
+                        
+                    <label class="range" title="zdarzenie co do którego nie ma wątpliwości">zachodzące
+                        <input class="good" type="radio" name="mode" value="certo">
+                    </label>
+
+                    <label class="range" title="prawdy życiowe, fizyczne, powiedzienia itp.">aforyzm
+                        <input class="bad" type="radio" name="mode" value="aforismo">
+                    </label>
+
+                    <button name="reset" type="button">reset</button>
+
+                </section>
+
+
+
+                <section id="tone">
+
+                    <h2>Ton</h2>
+
+                    <label class="range">rozkaz
+                        <input class="bad" type="radio" name="tone" value="comando">
+                    </label>
+                    
+                    <label class="range" title="wtrącenie czegoś z wcześniejszego etapu rozmowy">wtrącenie
+                        <input class="fine" type="radio" name="tone" value="causalità">
+                    </label>
+                    
+                    <label class="range">uprzejmość
+                        <input class="good" type="radio" name="tone" value="gentilezza">
+                    </label>
+                    
+                    <label class="range">rozmowa
+                        <input class="fine" type="radio" name="tone" value="conversazione">
+                    </label>
+
+                    <label class="range" title="opowiadanie o czymś, kronikarstwo itp.">narracja
+                        <input class="fine" type="radio" name="tone" value="narrazione">
+                    </label>
+
+                    <button name="reset" type="button">reset</button>
+
+                </section>
+
+                <button name="reset" type="button">resetuj wszystko</button>
+
+            </form>
+
+        </main>
+
+
+        <script type="module">
+            import handleForm from "./select.mjs"
+
+            handleForm(document.querySelector('form'))
+        </script>
+
+    </body>
+</html>

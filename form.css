@@ -1,0 +1,34 @@
+label.range {
+    display: inline-block;
+    position: relative;
+    padding-bottom: 1.5em;
+}
+
+input::after {
+
+    content: attr( value );
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    font-size: 66%;
+}
+
+[type=radio]:checked {
+    --background-color: #4f58db;
+    --border-color: #4f58db;
+}
+
+.fine[type=radio]:checked {
+    --background-color: #dbdb4f;
+    --border-color: #dbdb4f;
+}
+
+.bad[type=radio]:checked {
+    --background-color: #db2929;
+    --border-color: #db2929;
+}
+
+.good[type=radio]:checked {
+    --background-color: #26aa26;
+    --border-color: #26aa26;
+}
