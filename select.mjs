@@ -256,6 +256,24 @@ function getAvaibleAlts(variant) {
 }
 
 
+/** @param {HTMLInputElement[]} inputs */
+function autoCheckLast(inputs) {
+
+    for (const prop of ['time', 'frequency', 'done', 'mode', 'tone']) {
+
+        const checked = inputs.filter(x => x.name == prop)
+        for (const input of checked) {
+
+            const isAvaible = !input.hasAttribute('disabled')
+            const isUnique = checked.filter(x => x !== input)
+                .every(x => x.hasAttribute('disabled'))
+
+            if (isAvaible && isUnique)
+                input.checked = true
+        }
+    }
+}
+
 /**  
  * @param {HTMLInputElement[]} inputs
  * @param {HTMLSelectElement} select
@@ -276,13 +294,23 @@ function handleInputs(inputs, select) {
         else
             input.setAttribute('disabled', 'disabled')
     }
+    
+    autoCheckLast(inputs)
 
-    const names = alts.map(([_, name]) => name)
+    const names = [...new Set(alts.map(([_, name]) => name))]
     const placeholder = "<option value='' selected>qualsiasi</option>"
-    select.innerHTML = names.reduce((acc, name, i) => `${acc}<option value="${i}">${name}</option>`, placeholder)
+    const selected = select.value
+    select.innerHTML = names.reduce((acc, name, i) => `${acc}<option value="${name}">${name}</option>`, placeholder)
+
+    if (select)
+        select.value = selected
 }
 
 
+/**
+ * @param {HTMLSelectElement} select 
+ * @param {HTMLInputElement[]} inputs
+ */
 function handleSelect(select, inputs) {
 
     if (select.value == '')
@@ -294,16 +322,32 @@ function handleSelect(select, inputs) {
         variant[input.name] = input.value
 
     const alts = getAvaibleAlts(variant)
-    const [selected] = alts[select.value]
+    const [_, name] = alts.filter(([_, name]) => name == select.value)
+
+    const avaible = alts
+        .filter(([alt, key]) => key == select.value).map(([alt]) => alt)
+        .reduce((acc, alt) => ({
+
+            time: [...new Set([...acc.time, ...alt.time])],
+            frequency: [...new Set([...acc.frequency, ...alt.frequency])],
+            done: [...new Set([...acc.done, ...alt.done])],
+
+            mode: [...new Set([...acc.mode, ...alt.mode])],
+            tone: [...new Set([...acc.tone, ...alt.tone])]
+
+        }), { time: [], frequency: [], done: [], mode: [], tone: [] })
 
     for (const input of inputs) {
 
-        const isInAvaibleAlt = selected[input.name].includes(input.value)
+        const isInAvaibleAlt = avaible[input.name].includes(input.value)
         if (isInAvaibleAlt)
             input.removeAttribute('disabled')
         else
             input.setAttribute('disabled', 'disabled')
     }
+
+    autoCheckLast(inputs)
+    handleInputs(inputs, select)
 }
 
 
@@ -343,6 +387,7 @@ export default function(container) {
             input.removeAttribute('disabled')
         }
 
+        select.value = ''
         handleInputs(inputs, select)
     }
     
