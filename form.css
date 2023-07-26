@@ -1,7 +1,15 @@
+body > main {
+    padding: 0;
+}
+
+body {
+    padding-bottom: 50vh;
+}
+
 label.range {
     display: inline-block;
     position: relative;
-    padding-bottom: 1.5em;
+    padding-bottom: 1em;
 }
 
 input::after {
@@ -13,22 +21,42 @@ input::after {
     font-size: 66%;
 }
 
-[type=radio]:checked {
-    --background-color: #4f58db;
-    --border-color: #4f58db;
+form section {
+    margin-bottom: 0;
 }
 
-.fine[type=radio]:checked {
-    --background-color: #dbdb4f;
-    --border-color: #dbdb4f;
+h1 {
+    text-align: right;
+    font-size: 80%;
+    margin: 1em 0;
 }
 
-.bad[type=radio]:checked {
-    --background-color: #db2929;
-    --border-color: #db2929;
+form section h2, 
+form section h3, 
+form section h4, 
+form section h5, 
+form section h6 {
+
+    margin-bottom: 1em;
+    border-bottom: solid;
+    color: var(--primary)
 }
 
-.good[type=radio]:checked {
-    --background-color: #26aa26;
-    --border-color: #26aa26;
+form section h2 { font-size: 100% } 
+form section h3 { font-size: 90% } 
+form section h4 { font-size: 80% } 
+form section h5 { font-size: 70% } 
+form section h6 { font-size: 60% }
+
+form section h2 > button {
+    display: inline-block;
+    width: min-content;
+    padding: 0 .32em;
+}
+
+output {
+    font-size: 150%;
+    display: block;
+    padding: 1.4em;
+    border-top: solid;
 }

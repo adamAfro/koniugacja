@@ -1,4 +1,7 @@
 // @ts-check
+
+import getRandomConjugation from './scrap/verbi-italiani.com.mjs'
+
 /** 
  * @typedef Alts 
  * @property {string[]} time
@@ -26,28 +29,28 @@ const indicativo = ([
 
         time: ['presente'],
         frequency: ['unico', 'ripetuto', 'continuo'],
-        done: ['nonfinito'],
+        done: ['non specificato'],
     
         mode: ['certo', 'aforismo'],
         tone: ['conversazione', 'narrazione']
     
-    }, 'presente indicativo'],
+    }, 'presente'],
 
     [{
 
         time: ['futuro'],
         frequency: ['unico'],
-        done: ['nonfinito'],
+        done: ['non specificato'],
     
         mode: ['certo'],
         tone: ['conversazione']
-    }, 'presente indicativo'],
+    }, 'presente'],
 
     [{
 
         time: ['passato'],
         frequency: ['ripetuto'],
-        done: ['nonfinito'],
+        done: ['non specificato'],
     
         mode: ['certo'],
         tone: ['conversazione', 'narrazione']
@@ -58,7 +61,7 @@ const indicativo = ([
 
         time: ['passato'],
         frequency: ['unico'],
-        done: ['nonfinito'],
+        done: ['non specificato'],
     
         mode: ['irrealtà'],
         tone: ['conversazione']
@@ -69,7 +72,7 @@ const indicativo = ([
 
         time: ['passato'],
         frequency: ['unico'],
-        done: ['nonfinito'],
+        done: ['non specificato'],
     
         mode: ['certo'],
         tone: ['gentilezza']
@@ -80,7 +83,7 @@ const indicativo = ([
 
         time: ['passato'],
         frequency: ['unico'],
-        done: ['nonfinito'],
+        done: ['non specificato'],
     
         mode: ['certo'],
         tone: ['causalità']
@@ -91,7 +94,7 @@ const indicativo = ([
 
         time: ['futuro'],
         frequency: ['unico'],
-        done: ['nonfinito'],
+        done: ['non specificato'],
     
         mode: ['certo', 'possibile'],
         tone: ['conversazione']
@@ -102,7 +105,7 @@ const indicativo = ([
 
         time: ['presente'],
         frequency: ['unico'],
-        done: ['nonfinito'],
+        done: ['non specificato'],
     
         mode: ['certo'],
         tone: ['comando']
@@ -124,7 +127,7 @@ const indicativo = ([
 
         time: ['passato prossimo', 'passato oggi'],
         frequency: ['unico'],
-        done: ['nonfinito'],
+        done: ['non specificato'],
     
         mode: ['certo'],
         tone: ['conversazione']
@@ -146,7 +149,7 @@ const indicativo = ([
 
         time: ['trapassato'],
         frequency: ['unico'],
-        done: ['nonfinito'],
+        done: ['non specificato'],
     
         mode: ['certo'],
         tone: ['conversazione']
@@ -171,36 +174,25 @@ const congiuntivo = ([
 
     [{
 
-        time: ['futuro'],
-        frequency: ['unico'],
-        done: ['nonfinito'],
-    
-        mode: ['congiuntivo'],
-        tone: ['conversazione']
-    
-    }, 'futuro congiuntivo'],
-
-    [{
-
         time: ['presente'],
         frequency: ['unico'],
-        done: ['nonfinito'],
+        done: ['non specificato'],
     
         mode: ['congiuntivo'],
         tone: ['conversazione']
     
-    }, 'presente congiuntivo'],
+    }, 'presente'],
     
     [{
 
         time: ['passato'],
         frequency: ['unico'],
-        done: ['nonfinito'],
+        done: ['non specificato'],
     
         mode: ['congiuntivo'],
         tone: ['conversazione']
     
-    }, 'passato congiuntivo'],
+    }, 'passato'],
     
     [{
 
@@ -211,7 +203,18 @@ const congiuntivo = ([
         mode: ['congiuntivo'],
         tone: ['conversazione']
     
-    }, 'trapassato congiuntivo']
+    }, 'trapassato'],
+
+    [{
+
+        time: ['trapassato'],
+        frequency: ['unico', 'ripetuto'],
+        done: ['non specificato'],
+    
+        mode: ['congiuntivo'],
+        tone: ['conversazione']
+    
+    }, 'imperfetto']
 ])
 
 /** @type [Alts, string][] */
@@ -226,22 +229,27 @@ const condizionale = ([
         mode: ['condizionale'],
         tone: ['conversazione']
     
-    }, 'presente condizionale'],
+    }, 'presente'],
 
     [{
 
-        time: ['futuro'],
+        time: ['passato'],
         frequency: ['unico'],
         done: ['finito'],
     
         mode: ['condizionale'],
         tone: ['conversazione']
     
-    }, 'futuro condizionale']
+    }, 'passato']
 ])
 
 
-const alts = ([ ...indicativo, ...congiuntivo, ...condizionale ])
+/** @type {[Alts, string][]} *///@ts-ignore
+const alts = ([ 
+    ...indicativo.map(([alt, name]) => [alt, `indicativo ${name}`]),
+    ...congiuntivo.map(([alt, name]) => [alt, `congiuntivo ${name}`]), 
+    ...condizionale.map(([alt, name]) => [alt, `condizionale ${name}`]) 
+])
 
 
 /** @param {Variant} variant */
@@ -274,6 +282,20 @@ function autoCheckLast(inputs) {
     }
 }
 
+
+/** @param {HTMLSelectElement} select */
+function autoSelect(select) {
+
+    if (select.value)
+        return
+
+    if (select.options.length == 1)
+        select.value = select.options[0].value
+    else if (select.options.length == 2)
+        select.value = select.options[1].value
+}
+
+
 /**  
  * @param {HTMLInputElement[]} inputs
  * @param {HTMLSelectElement} select
@@ -298,12 +320,14 @@ function handleInputs(inputs, select) {
     autoCheckLast(inputs)
 
     const names = [...new Set(alts.map(([_, name]) => name))]
-    const placeholder = "<option value='' selected>qualsiasi</option>"
+    const placeholder = "<option value='' disabled selected>qualsiasi</option>"
     const selected = select.value
     select.innerHTML = names.reduce((acc, name, i) => `${acc}<option value="${name}">${name}</option>`, placeholder)
 
-    if (select)
+    if (selected && Array.from(select.options).some(opt => opt.value == selected))
         select.value = selected
+    else
+        autoSelect(select)
 }
 
 
@@ -351,46 +375,77 @@ function handleSelect(select, inputs) {
 }
 
 
+/** 
+ * @param {Event} event
+ * @param {HTMLInputElement[]} inputs
+ * @param {HTMLSelectElement} select
+ */
+function reset(event, inputs, select) {
+                
+    /** @type HTMLButtonElement *///@ts-ignore
+    const btn = event.target
+    /** @type Element *///@ts-ignore
+    const container = btn.parentElement?.parentElement
+    for (const input of container.querySelectorAll('input')) {
+
+        input.checked = false
+        input.removeAttribute('disabled')
+    }
+
+    select.value = ''
+    handleInputs(inputs, select)
+}
+
+
+/** 
+ * @param {string} name 
+ * @param {HTMLOutputElement} container 
+ */
+async function outputExample(name, container) {
+
+    if (!name)
+        return
+
+    const [verb, conjugations] = await getRandomConjugation()
+
+    /** @type [string, string][] *///@ts-ignore
+    const conj = conjugations[name]
+
+    container.innerHTML = verb + '<br>' + conj.join('<br>')
+}
+
+
 /** @param {Element} container */
 export default function(container) {
 
-    const query = '[name=time],[name=frequency],[name=done],[name=mode],[name=tone]'
-    /** @type {HTMLInputElement[]} */
-    const inputs = Array.from(container.querySelectorAll(query))
     /** @type {HTMLSelectElement} *///@ts-ignore
     const select = container.querySelector('select')
+    /** @type {HTMLOutputElement} *///@ts-ignore
+    const output = container.querySelector('output')
+    select.addEventListener('change', () => {
 
+        handleSelect(select, inputs)
+        outputExample(select.value, output)
+    })
 
-    select.addEventListener('change', () => handleSelect(select, inputs))
-
-
+    const query = '[name=time],[name=frequency],[name=done],[name=mode],[name=tone]'
+    /** @type {HTMLInputElement[]} */
+    const inputs = Array.from(container.querySelectorAll(query))    
     /** @param {Event | null} event */
     const inputHandler = (event = null) =>
         handleInputs(inputs, select)
 
     inputHandler()
-    
+    autoSelect(select)
     for (const input of inputs)
         input.addEventListener('input', inputHandler)
 
-
     /** @param {Event} event */
-    const reset = (event) => {
-                
-        /** @type HTMLButtonElement *///@ts-ignore
-        const btn = event.target
-        /** @type Element *///@ts-ignore
-        const container = btn.parentElement
-        for (const input of container.querySelectorAll('input')) {
-
-            input.checked = false
-            input.removeAttribute('disabled')
-        }
-
-        select.value = ''
-        handleInputs(inputs, select)
-    }
-    
+    const resetHandler = (event) =>
+        reset(event, inputs, select)    
     for (const btn of container.querySelectorAll('button[name="reset"]'))
-        btn.addEventListener('click', reset)
+        btn.addEventListener('click', resetHandler)
+
+    if (select.value)
+        outputExample(select.value, output)
 }
